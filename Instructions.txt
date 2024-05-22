@@ -1,0 +1,20 @@
+Mindfulee
+HealthyGamer GG hackathon project
+Project Members: stormlord_, fruitcakette
+
+To run this web application, the following technologies are required:
+- Java Version 16 or higher (OpenJDK and Azul Zulu JDK tested)
+- PostgreSQL version 16.1 or higher
+- Wildfly 31 or higher (a compressed archive with my testing wildfly is provided)
+
+1. Create a mindfulee database in PostgreSQL and import the mindfulee_db.sql script inside the scripts folder.
+This creates test and dummy data from development, and the user is test_user with password 123456!a
+2. Go to {wildlfly_path}/standalone/configuration and find the standalone.xml. Find the subsystem datasources,
+and change the PostgreSQL datasource with the desired ip, port, username and password.
+3. If you want to run the application outside of localhost, go to Interface Binding, and change the public IP to the
+appropriate address (0.0.0.0 if you want to use the server's IP)
+4. If required, go to socket-binding and change the http port to a free port.
+5. Copy the mindfulee-1.0.war from the files folder inside the {wildlfly_path}/standalone/deployments folder.
+6. Create an empty mindfulee-1.0.war.dodeploy file. If you have renamed the war, use the new war's name instead!
+7. Wait a few seconds, and the application should deploy. If not, please send me a message to help you with
+the process.
