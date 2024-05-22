@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Mindfulee - Events</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/fav_icon.png"/>
+</h:head>
+
+<h:body>
+    <p:growl id="growl" showDetail="true"/>
+    <h:form id="form">
+        <div class="ui-g">
+            <div class="ui-g-11">&nbsp;</div>
+            <div class="ui-g-1">
+                <p:commandLink immediate="true" value="Logout" action="#{userBn.logout()}" />
+            </div>
+        </div>
+        <div class="ui-g">
+            <div class="ui-g-2" style="text-align: center; font-size: 12px;align-self: center;">
+                <h:outputText value="Calendar" style="font-weight: bold;font-size: 24px;"/>
+                <p:calendar id="inline" value="#{eventView.currentDate}" mode="inline"
+                            style="margin-left:10%;margin-top:5%;">
+                    <p:ajax event="dateSelect" listener="#{eventView.onDateSelect}"
+                            update=":form"/>
+                </p:calendar>
+            </div>
+            <div class="ui-g-4" style="text-align: center; font-size: 12px; align-self: center;">
+                <p:chart type="pie" model="#{eventView.categoryPieChartModel}"
+                         style="width:500px;height:500px;margin-left:10%;margin-top:5%;"/>
+            </div>
+            <div class="ui-g-4" style="text-align: center; font-size: 12px; align-self: center;">
+                <p:chart type="pie" model="#{eventView.statusPieChartModel}"
+                         style="width:500px;height:500px;margin-left:10%;margin-top:5%;"/>
+            </div>
+            <div class="ui-g-2" style="text-align: center; font-size: 12px;; align-self: center;">
+                <p:panelGrid columns="1">
+                    <f:facet name="header">
+                        <h:outputText value="Mindfulee suggestions!"/>
+                    </f:facet>
+                    <h:outputText value="Add a few activities to plan your day!"
+                                  style="background-color: lightblue;font-weight: bold;"
+                                  rendered="#{!eventView.planActivities}"/>
+                    <h:outputText value="Your day looks good! "
+                                  style="background-color: lightgreen; font-weight: bold;"
+                                  rendered="#{eventView.goodDay}"/>
+                    <h:outputText value="You have added too much work. Please remember to rest!"
+                                  style="background-color: orange;font-weight: bold;"
+                                  rendered="#{eventView.muchWork}"/>
+                    <h:outputText value="Check your gaming. Having fun and relaxing is important, but keep it balanced!"
+                                  style="background-color: goldenrod;font-weight: bold;"
+                                  rendered="#{eventView.muchGaming}"/>
+                    <h:outputText
+                            value="You have too little resting activities. Please make sure you rest at least 7+ hours!"
+                            style="background-color: coral;font-weight: bold;"
+                            rendered="#{eventView.littleSleep}"/>
+                    <h:outputText
+                            value="You have added no socializing activity. Even a phone call can make a difference!"
+                            style="background-color: royalblue;font-weight: bold;"
+                            rendered="#{!eventView.socializing}"/>
+                    <h:outputText
+                            value="You have added no house chores. Make sure to add a small maintenance activity today!"
+                            style="background-color: burlywood;font-weight: bold;"
+                            rendered="#{!eventView.doneChores}"/>
+                    <h:outputText
+                            value="Please take a few times to let the mind do its processing! Meditate, Journal, or Introspect!"
+                            style="background-color: beige;font-weight: bold;"
+                            rendered="#{!eventView.introspecting}"/>
+                </p:panelGrid>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-2">
+                <p:commandButton value="Create New Event" type="button" onclick="PF('addEventDlg').show();"
+                                 disabled="#{eventView.pastEvent}"/>
+                &nbsp;
+                <p:commandButton value="Create New Activity Type" type="button" onclick="PF('addActivityDlg').show();"/>
+            </div>
+            <div class="ui-g-10">
+                &nbsp;
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-6">
+                <p:dataTable id="eventDt" var="activity" value="#{eventView.userActivities}"
+                             rows="5" widgetVar="eventDt"
+                             paginator="true" paginatorPosition="bottom"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                             editable="true"
+                             style="margin-bottom:20px">
+
+                    <f:facet name="header">
+                        <h3><h:outputText value="#{eventView.upcomingHeaderTitle}"/></h3>
+                    </f:facet>
+
+                    <p:ajax event="rowEdit" listener="#{eventView.onRowEdit}" update=":growl"/>
+                    <p:ajax event="rowEditCancel" listener="#{eventView.onRowCancel}" update=":growl"/>
+
+                    <p:column headerText="Activity" style="text-align: center; font-size: 12px;">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{activity.activityName}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputText id="modelInput" value="#{activity.activityName}" style="width:100%"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Type" style="text-align: center; font-size: 12px;">
+                        <h:outputText value="#{activity.activityType.activityTypeName}"/>
+                    </p:column>
+
+                    <p:column headerText="Intent" style="text-align: center; font-size: 12px;">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{activity.intentType}"/></f:facet>
+                            <f:facet name="input">
+                                <h:selectOneMenu value="#{activity.intentType}" style="width:100%">
+                                    <f:selectItems value="#{eventView.intentTypeLst}" var="intent"
+                                                   itemLabel="#{intent.name()}" itemValue="#{intent}"/>
+                                </h:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Category" style="text-align: center; font-size: 12px;">
+                        <h:outputText value="#{activity.activityType.activityCategory.name()}"/>
+                    </p:column>
+
+                    <p:column headerText="Status" style="text-align: center; font-size: 12px;">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{activity.activityStatus}"/></f:facet>
+                            <f:facet name="input">
+                                <h:selectOneMenu value="#{activity.activityStatus}" style="width:100%">
+                                    <f:selectItems value="#{eventView.activityStatusLst}" var="status"
+                                                   itemLabel="#{status.desc}" itemValue="#{status}"/>
+                                </h:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Starting" style="text-align: center; font-size: 12px;" width="190">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <p:datePicker id="dateStarting-1" value="#{activity.dateStarted}"
+                                              disabled="true"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:datePicker id="dateStarting-2" value="#{activity.dateStarted}"
+                                              mindate="#{eventView.minDate}" maxdate="#{eventView.maxDate}"
+                                              required="true"
+                                              requiredMessage="Please set a Starting Date"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Ending" style="text-align: center; font-size: 12px;" width="190">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <p:datePicker id="dateEnding-1" value="#{activity.dateEnded}"
+                                              disabled="true"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:datePicker id="dateEnding-2" value="#{activity.dateEnded}"
+                                              mindate="#{eventView.minDate}" maxdate="#{eventView.maxDate}"
+                                              requiredMessage="Please set a Ending Date"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column style="width:6rem; text-align: center; font-size: 12px;">
+                        <p:rowEditor editTitle="Edit Event"
+                                     cancelTitle="Cancel Edit" saveTitle="Save Event"/>
+                    </p:column>
+
+                </p:dataTable>
+            </div>
+            <div class="ui-g-4" style="text-align: center; font-size: 12px;">
+                <p:dataTable id="eventDt2" var="activity" value="#{eventView.userDailyActivities}"
+                             rows="5" widgetVar="eventDt2"
+                             paginator="true" paginatorPosition="bottom"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                             editable="true"
+                             style="margin-bottom:20px">
+
+                    <f:facet name="header">
+                        <h3>Day's Activities</h3>
+                    </f:facet>
+
+                    <p:column headerText="Activity" style="text-align: center; font-size: 12px;">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{activity.activityName}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputText id="modelInput2" value="#{activity.activityName}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Status" style="text-align: center; font-size: 12px;">
+                        <h:outputText value="#{activity.activityStatus}"/>
+                    </p:column>
+
+                    <p:column headerText="Starting" style="text-align: center; font-size: 12px;" width="190">
+                        <p:datePicker id="dateStarting-3" value="#{activity.dateStarted}"
+                                      disabled="true"/>
+                    </p:column>
+
+                    <p:column headerText="Ending" style="text-align: center; font-size: 12px;" width="190">
+                        <p:datePicker id="dateEnding-3" value="#{activity.dateEnded}"
+                                      disabled="true"/>
+                    </p:column>
+
+                </p:dataTable>
+            </div>
+            <div class="ui-g-2" style="text-align: center; font-size: 12px;">
+                <p:panelGrid columns="2">
+                    <f:facet name="header">
+                        <h:outputText value="Statistics"/>
+                    </f:facet>
+                    <h:outputText value="Daily Activities Pending: "/>
+                    <h:outputText value="#{eventView.dailyActivitiesPending} (#{eventView.dailyPendingPercent}%)"/>
+
+                    <h:outputText value="Daily Activities Completed: "/>
+                    <h:outputText value="#{eventView.dailyActivitiesCompleted} (#{eventView.dailyCompletedPercent}%)"/>
+
+                    <h:outputText value="Daily Activities Cancelled:"/>
+                    <h:outputText value="#{eventView.dailyActivitiesCancelled} (#{eventView.dailyCancelledPercent}%)"/>
+
+                    <h:outputText value="Total Activities Pending: "/>
+                    <h:outputText value="#{eventView.totalActivitiesPending} (#{eventView.totalPendingPercent}%)"/>
+
+                    <h:outputText value="Total Activities Completed: "/>
+                    <h:outputText value="#{eventView.totalActivitiesCompleted} (#{eventView.totalCompletedPercent}%)"/>
+
+                    <h:outputText value="Total Activities Cancelled:"/>
+                    <h:outputText value="#{eventView.totalActivitiesCancelled} (#{eventView.totalCancelledPercent}%)"/>
+                </p:panelGrid>
+            </div>
+        </div>
+
+        <p:dialog header="Basic Dialog" widgetVar="addEventDlg" minHeight="300">
+            <h:panelGrid columns="2" cellpadding="5">
+                <p:outputLabel value="Activity: "/>
+                <p:inputText value="#{eventView.currentActivity.activityName}" placeholder="Activity Name"
+                             required="true" requiredMessage="Please name the Activity"/>
+
+                <p:outputLabel value="Activity Type: "/>
+                <h:selectOneMenu value="#{eventView.currentActivity.activityType}" style="width:100%"
+                                 converter="activityTypeConverter">
+                    <f:selectItems value="#{eventView.activityTypesLst}" var="activity"
+                                   itemLabel="#{eventView.currentActivity.activityType.activityTypeName}"
+                                   itemValue="#{activity}"/>
+                </h:selectOneMenu>
+
+                <p:outputLabel value="Intent: "/>
+                <h:selectOneMenu value="#{eventView.currentActivity.intentType}" style="width:100%">
+                    <f:selectItems value="#{eventView.intentTypeLst}" var="intent"
+                                   itemLabel="#{intent.name()}" itemValue="#{intent}"/>
+                </h:selectOneMenu>
+
+                <p:outputLabel for="dateStarted" value="Starting:"/>
+                <p:datePicker id="dateStarted" value="#{eventView.currentActivity.dateStarted}"
+                              mindate="#{eventView.minDate}" maxdate="#{eventView.maxDate}" required="true"
+                              requiredMessage="Please set a Starting Date"/>
+
+                <p:outputLabel for="dateEnding" value="Ending:"/>
+                <p:datePicker id="dateEnding" value="#{eventView.currentActivity.dateEnded}"
+                              mindate="#{eventView.minDate}" maxdate="#{eventView.maxDate}" required="true"
+                              requiredMessage="Please set a Ending Date"/>
+
+                <p:commandButton value="Add Event" update=":form:eventDt growl"
+                                 action="#{eventView.addCurrentActivity()}" oncomplete="PF('addEventDlg').hide();"/>
+                <br/>
+            </h:panelGrid>
+        </p:dialog>
+    </h:form>
+
+    <h:form>
+        <p:dialog header="Basic Dialog" widgetVar="addActivityDlg" minHeight="300">
+            <h:panelGrid columns="2" cellpadding="5">
+                <p:outputLabel value="Activity Type: "/>
+                <p:inputText value="#{eventView.currentActivityType.activityTypeName}" placeholder="Activity Type Name"
+                             required="true" requiredMessage="Please name the Activity Type"/>
+
+                <p:outputLabel value="Intent: "/>
+                <h:selectOneMenu value="#{eventView.currentActivityType.activityCategory}" style="width:100%">
+                    <f:selectItems value="#{eventView.activityCategoryLst}" var="category"
+                                   itemLabel="#{category.name()}" itemValue="#{category}"/>
+                </h:selectOneMenu>
+
+                <p:commandButton value="Add Activity Type" update=":form:eventDt growl"
+                                 action="#{eventView.addCurrentActivityType()}"
+                                 oncomplete="PF('addActivityDlg').hide();"/>
+                <br/>
+            </h:panelGrid>
+        </p:dialog>
+    </h:form>
+
+</h:body>
+</html>

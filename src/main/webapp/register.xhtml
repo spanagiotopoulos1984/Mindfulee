@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Mindfulee- Register</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/fav_icon.png"/>
+</h:head>
+
+<h:body>
+    <div id="logo">
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <p:graphicImage name="logo.png" library="images" width="600" height="auto"/>
+            </div>
+        </div>
+    </div>
+    <div id="login-box">
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <h1 id="title">Mindfulee</h1>
+            </div>
+        </div>
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <h2>Register New User</h2>
+            </div>
+        </div>
+        <h:form>
+            <p:growl id="growl" sticky="true" showDetail="true" life="3000"/>
+            <div class="ui-g">
+                <div class="ui-g-3"></div>
+                <div class="ui-g-6">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputLabel for="username" value="Username:"/>
+                        <p:inputText id="username" value="#{userLoginView.username}" required="true" label="username"/>
+
+                        <h:outputLabel for="password" value="Password:"/>
+                        <p:password id="password" value="#{userLoginView.password}" required="true" label="password"/>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Register" update="growl" action="#{userLoginView.register}"/>
+                        </f:facet>
+                    </h:panelGrid>
+                    <div class="ui-g-3"></div>
+                </div>
+            </div>
+        </h:form>
+        <div class="ui-g">
+            <div class="ui-g-3">
+                <h:form>
+                    <p:commandLink id="nonAjax" action="#{userLoginView.returnToLogin}" style="margin-right:20px;"
+                                   ajax="false">
+                        <h:outputText value="Return to Login"/>
+                    </p:commandLink>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</h:body>
+</html>
+
+
+
+
+
